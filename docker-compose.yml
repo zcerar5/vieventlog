@@ -23,6 +23,13 @@ services:
       # Optional: Basic Auth protection
       - BASIC_AUTH_USER=admin
       - BASIC_AUTH_PASSWORD=geheim123
+
+      # Optional: Home Assistant MQTT Discovery for SmartClimate room values
+      # - MQTT_ENABLED=true
+      # - MQTT_BROKER=tcp://homeassistant.local:1883
+      # - MQTT_USERNAME=mqtt-user
+      # - MQTT_PASSWORD=mqtt-passwort
+      # - MQTT_INTERVAL_SECONDS=300
     restart: unless-stopped
     profiles:
       - env
@@ -43,6 +50,13 @@ services:
       # Optional: Basic Auth
       # - BASIC_AUTH_USER=admin
       # - BASIC_AUTH_PASSWORD=geheim123
+
+      # Optional: Home Assistant MQTT Discovery for SmartClimate room values
+      # - MQTT_ENABLED=true
+      # - MQTT_BROKER=tcp://homeassistant.local:1883
+      # - MQTT_USERNAME=mqtt-user
+      # - MQTT_PASSWORD=mqtt-passwort
+      # - MQTT_INTERVAL_SECONDS=300
     restart: unless-stopped
     profiles:
       - file

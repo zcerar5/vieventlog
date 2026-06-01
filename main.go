@@ -227,6 +227,11 @@ func main() {
 		if err != nil {
 			log.Printf("Temperature scheduler initialization: %v", err)
 		}
+
+		err = StartMQTTPublisher()
+		if err != nil {
+			log.Printf("MQTT publisher initialization: %v", err)
+		}
 	}()
 
 	// Get bind address from environment, with backward compatibility for PORT
@@ -276,6 +281,9 @@ func main() {
 
 	log.Println("Stopping temperature scheduler...")
 	StopTemperatureScheduler()
+
+	log.Println("Stopping MQTT publisher...")
+	StopMQTTPublisher()
 
 	// Give schedulers time to finish current operations
 	time.Sleep(500 * time.Millisecond)

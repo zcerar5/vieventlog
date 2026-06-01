@@ -548,6 +548,16 @@ services:
 | `VICARE_ACCOUNTS` | Multi-Account als JSON | `{"accounts":{...}}` | - |
 | `BASIC_AUTH_USER` | Basic Auth Benutzername | `admin` | - |
 | `BASIC_AUTH_PASSWORD` | Basic Auth Passwort | `geheim123` | - |
+| `MQTT_ENABLED` | Home Assistant MQTT-Publisher aktivieren | `true` | `false` |
+| `MQTT_BROKER` | MQTT-Broker-URL oder Host:Port | `tcp://homeassistant.local:1883` | - |
+| `MQTT_USERNAME` | MQTT-Benutzername | `mqtt-user` | - |
+| `MQTT_PASSWORD` | MQTT-Passwort | `geheim123` | - |
+| `MQTT_CLIENT_ID` | MQTT Client-ID | `vieventlog` | `vieventlog` |
+| `MQTT_BASE_TOPIC` | Basis-Topic fuer Statusdaten | `vieventlog` | `vieventlog` |
+| `MQTT_DISCOVERY_PREFIX` | Home Assistant Discovery Prefix | `homeassistant` | `homeassistant` |
+| `MQTT_DISCOVERY` | MQTT Discovery Configs senden | `true` | `true` |
+| `MQTT_RETAIN` | MQTT State/Availability retained senden | `true` | `true` |
+| `MQTT_INTERVAL_SECONDS` | Abfrage- und Publish-Intervall | `300` | `300` |
 
 **Hinweis:** Im Container wird **kein** System-Keyring verwendet. Credentials müssen über ENV-Vars oder Config-File bereitgestellt werden.
 
@@ -684,6 +694,40 @@ Integration der Viessmann SmartClimate Raumsteuerung mit Thermostaten:
 **Zugriff:**
 - Über den SmartClimate-Button im Dashboard
 - Automatische Erkennung bei vorhandenen SmartClimate-Geräten
+
+### Home Assistant MQTT fuer SmartClimate-Raumwerte
+
+ViEventLog kann die Raumwerte aus `RoomControl`-Features per MQTT an Home Assistant senden. Das ist hilfreich, wenn die native Home-Assistant-Integration zwar Batterie, Luftfeuchtigkeit oder Signalstaerke sieht, aber die Ist-Temperatur der Raumthermostate nicht bereitstellt.
+
+**Gesendete Werte:**
+- Ist-Temperatur pro Raum (`rooms.N.sensors.temperature`)
+- Luftfeuchtigkeit pro Raum, falls vorhanden
+- Heiz- und Kuehl-Solltemperatur, falls vorhanden
+- Retained JSON-State unter `vieventlog/rooms/<installationId>/<roomId>/state`
+- Home Assistant MQTT Discovery Sensors unter `homeassistant/sensor/.../config`
+
+**Docker-Beispiel:**
+```yaml
+services:
+  vieventlog:
+    image: vieventlog-mqtt:latest
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./config:/config
+    environment:
+      - BIND_ADDRESS=0.0.0.0:5000
+      - VICARE_CONFIG_DIR=/config
+      - MQTT_ENABLED=true
+      - MQTT_BROKER=tcp://homeassistant.local:1883
+      - MQTT_USERNAME=mqtt-user
+      - MQTT_PASSWORD=mqtt-passwort
+      - MQTT_INTERVAL_SECONDS=300
+    restart: unless-stopped
+```
+
+Wenn Ihr Broker ohne Benutzername/Passwort laeuft, koennen `MQTT_USERNAME` und `MQTT_PASSWORD` weggelassen werden. Home Assistant legt die Sensoren automatisch an, wenn MQTT Discovery aktiviert ist.
+Der Publisher nutzt plain TCP MQTT (`tcp://` oder `mqtt://`), passend fuer den ueblichen lokalen Mosquitto/Home-Assistant-Broker auf Port 1883.
 
 ### Vitovent Lüftung
 

@@ -300,14 +300,7 @@ func roomsHandler(w http.ResponseWriter, r *http.Request) {
 				rooms := extractRoomData(installationID, account.ID, gateway.Serial, features.RawFeatures)
 
 				// Apply user-defined room names
-				for i := range rooms {
-					roomKey := fmt.Sprintf("%s:%d", installationID, rooms[i].RoomID)
-					if account.RoomSettings != nil {
-						if settings, ok := account.RoomSettings[roomKey]; ok && settings.Name != "" {
-							rooms[i].RoomName = settings.Name
-						}
-					}
-				}
+				applyAccountRoomSettings(account, installationID, rooms)
 
 				allRooms = append(allRooms, rooms...)
 			}
