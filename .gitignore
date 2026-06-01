@@ -32,6 +32,10 @@ go.work
 .DS_Store
 Thumbs.db
 
+# Local deployment/runtime artifacts
+artifacts/
+.env.proxmox
+
 # GoReleaser
 dist/
 vitocal.txt
